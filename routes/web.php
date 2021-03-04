@@ -18,6 +18,14 @@ Route::get('/', function () {
     return view('welcome', ['cards' => PlayingCard::get()]);
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth:sanctum', 'verified']], function() {
+
+	Route::get('/', function () {
+	    return view('dashboard');
+	})->name('dashboard');
+
+	Route::get('/play', function() {
+		return view('play', ['cards' => PlayingCard::inRandomOrder()->get()]);
+	})->name('play');
+
+});

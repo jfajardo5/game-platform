@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
         } elseif(Str::contains($filename, 'H')) {
             return 'Hearts';
         }
-        return 'Swords';
+        return 'Spades';
     }
 
     public function parseCardValue($file)
