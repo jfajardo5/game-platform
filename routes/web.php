@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\PlayingCard;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', ['cards' => PlayingCard::get()]);
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
