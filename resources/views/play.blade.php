@@ -1,7 +1,10 @@
 <x-app-layout>
 	<div class="py-12">
         <div x-data="game()" class="mx-auto overflow-hidden bg-white shadow-xl max-w-7xl sm:px-6 lg:px-8 sm:rounded-lg">
-        	<div class="flex flex-row justify-between p-4">
+			<div x-show="gameIsOver" class="flex flex-col items-center justify-center text-center">
+				<span  x-text="flashMessage" class="fixed z-10 p-3 mt-20 font-bold text-white bg-green-700 border border-gray-300 rounded-lg shadow-lg animate__animated animate__fadeInUp"></span>
+			</div>
+			<div class="flex flex-row justify-between p-4">
 				<h2>Dealer: <span x-text="dealerScore"></span> pts</h2>
             	<h2>Player: <span x-text="playerScore"></span> pts</h2>
         	</div>
@@ -25,11 +28,13 @@
                 	</template>
                 </div>
             </div>
+			<div class="flex flex-col items-center justify-center text-center">
+				<label>Your balance: $<span x-text="playerBalance"></span></label>
+			</div>
             <div class="flex flex-row flex-wrap justify-center p-4">
-                <button x-show="!gameIsOver" @click="playerHits();gameLogic()" @mouseover="hitHover = true" @mouseover.away="hitHover = false" :class="{'animate__animated animate__infinite animate__pulse relative bg-gray-800 text-white p-3 m-2 px-14 rounded text-xl font-bold overflow-hidden' : hitHover, 'relative bg-gray-800 text-white p-3 m-2 px-14 rounded text-xl font-bold overflow-hidden' : !hitHover}">Hit</button>
-                <button x-show="!gameIsOver" @click="playerSits();gameLogic()" @mouseover="foldHover = true" @mouseover.away="foldHover = false" :class="{'animate__animated animate__infinite animate__pulse relative bg-gray-800 text-white p-3 m-2 px-12 rounded text-xl font-bold overflow-hidden' : foldHover, 'relative bg-gray-800 text-white p-3 m-2 px-12 rounded text-xl font-bold overflow-hidden' : !foldHover}">Fold</button>
+                <button x-bind:disabled="gameRunning" x-show="!gameIsOver && !playerHolds" @click="playerHits();gameLogic()" @mouseover="hitHover = true" @mouseover.away="hitHover = false" :class="{'animate__animated animate__infinite animate__pulse relative bg-gray-800 text-white p-3 m-2 px-14 rounded text-xl font-bold overflow-hidden' : hitHover, 'relative bg-gray-800 text-white p-3 m-2 px-14 rounded text-xl font-bold overflow-hidden' : !hitHover}">Hit</button>
+                <button x-bind:disabled="gameRunning" x-show="!gameIsOver && (rounds != 0)" @click="playerSits();gameLogic()" @mouseover="foldHover = true" @mouseover.away="foldHover = false" :class="{'animate__animated animate__infinite animate__pulse relative bg-gray-800 text-white p-3 m-2 px-12 rounded text-xl font-bold overflow-hidden' : foldHover, 'relative bg-gray-800 text-white p-3 m-2 px-12 rounded text-xl font-bold overflow-hidden' : !foldHover}">Fold</button>
 				<button x-show="gameIsOver" @click="resetGame()" @mouseover="resetHover = true" @mouseover.away="resetHover = false" :class="{'animate__animated animate__infinite animate__pulse relative bg-gray-800 text-white p-3 m-2 px-12 rounded text-xl font-bold overflow-hidden' : resetHover, 'relative bg-gray-800 text-white p-3 m-2 px-12 rounded text-xl font-bold overflow-hidden' : !resetHover}">Play Again!</button>
-				
 			</div>
         </div>
     </div>
@@ -37,6 +42,8 @@
     	function game() {
     		return {
     			rounds: 0,
+				gameRunning: false,
+				playerBalance: 300,
 				gameIsOver: false,
 	    		dealerScore: 0,
 	    		playerScore: 0,
@@ -46,6 +53,7 @@
 	    		hitHover: false,
 	    		foldHover: false,
 				resetHover: false,
+				flashMessage: "",
 	    		cards:[
 	    			@foreach($cards as $card)
 	    				{
@@ -63,11 +71,13 @@
 	    			}
 	    			this.calculatePlayerScore();
 	    			this.calculateDealerScore();
-	    			if(this.gameOver() || this.playerHolds) {
-	    				this.gameIsOver = true;
+	    			if(this.gameOver()) {
 						this.announceWinner();
+						await pause(300);
+	    				this.gameIsOver = true;
 	    			}
 	    			this.rounds++;
+					this.gameRunning = false;
 	    		},
 	    		dealerCanHit() {
 	    			if(this.dealerScore >= 17) {
@@ -76,12 +86,20 @@
 	    			return true;
 	    		},
 	    		playerHits() {
+					this.gameRunning = true;
+					if(this.rounds == 0) {
+						this.playerBalance -= 30;
+					}
 	    			if(!this.playerHolds) {
 						this.playerCards.push(this.cards.shift());
 	    			}
 	    		},
-	    		playerSits() {
+	    		async playerSits() {
+					this.gameRunning = true;
 	    			this.playerHolds = true;
+					while(this.dealerCanHit()) {
+						await this.gameLogic();
+					}
 	    		},
 	    		dealerHits() {
 					this.dealerCards.push(this.cards.shift());
@@ -113,23 +131,25 @@
 	    		gameOver() {
 	    			if(!this.dealerCanHit() && this.playerHolds) {
 	    				return true;
-	    			} else if(this.dealerScore <= 21 && this.playerScore <= 21) {
+	    			} else if(this.dealerScore < 21 && this.playerScore < 21) {
 	    				return false;
 	    			}
 	    			return true;
 	    		},
 	    		async announceWinner() {
-					await pause();
 	    			if(this.playerScore > this.dealerScore && this.playerScore <= 21) {
-	    				alert('Player wins!');
+	    				this.flashMessage = "Player wins!";
+						this.playerBalance += 45;
 	    			} else if(this.dealerScore > this.playerScore && this.dealerScore <= 21) {
-	    				alert('Dealer wins!');
-	    			} else if(this.dealerScore > 21) {
-	    				alert('Player wins!');
+	    				this.flashMessage = "Dealer wins!";
 	    			} else if(this.playerScore > 21) {
-	    				alert('Dealer wins!');
+	    				this.flashMessage = "Dealer wins!";
+	    			} else if(this.dealerScore > 21) {
+	    				this.flashMessage = "Player wins!";
+						this.playerBalance += 45;
 	    			} else if(this.dealerScore == this.playerScore) {
-	    				alert('It\'s a draw!');
+	    				this.flashMessage = "It's a draw!";
+						this.playerBalance += 30;
 	    			}
 	    		},
 				resetGame() {
