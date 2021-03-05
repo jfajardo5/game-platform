@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\PlayingCard;
+use App\Http\Livewire\Blackjack;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +15,7 @@ use App\Models\PlayingCard;
 */
 
 Route::get('/', function () {
-    return view('welcome', ['cards' => PlayingCard::get()]);
+    return view('welcome');
 });
 
 Route::group(['prefix' => 'dashboard', 'middleware' => ['auth:sanctum', 'verified']], function() {
@@ -24,8 +24,5 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth:sanctum', 'verifie
 	    return view('dashboard');
 	})->name('dashboard');
 
-	Route::get('/play', function() {
-		return view('play', ['cards' => PlayingCard::inRandomOrder()->get()]);
-	})->name('play');
-
+	Route::get('/play', Blackjack::class)->name('play');
 });

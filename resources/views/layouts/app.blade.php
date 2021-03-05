@@ -13,7 +13,7 @@
         <!-- Styles -->
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 
-        @livewireStyles
+        <livewire:styles />
 
         <!-- Scripts -->
         <script src="{{ mix('js/app.js') }}" defer></script>
@@ -37,6 +37,6 @@
 
         @stack('modals')
 
-        @livewireScripts
+        <livewire:scripts />
     </body>
 </html>
