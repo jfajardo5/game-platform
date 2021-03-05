@@ -11,7 +11,8 @@ class Blackjack extends Component
 
     public $rounds;
     public $gameRunning;
-    public $playerBalance;
+    public $playerBalance = 300;
+    private $betAmount = 30;
     public $gameIsOver;
     public $dealerScore;
     public $playerScore;
@@ -26,17 +27,16 @@ class Blackjack extends Component
     public function mount()
     {
 
-        $this->rounds = 0;
-        $this->gameRunning = false;
-        $this->playerBalance = 300;
         $this->gameIsOver = false;
+        $this->rounds = 0;
+        $this->flashMessage = "";
+        $this->gameRunning = false;
         $this->dealerScore = 0;
         $this->playerScore = 0;
         $this->dealerCards = new Collection;
         $this->playerCards = new Collection;
         $this->playerStands = false;
         $this->dealerStands = false;
-        $this->flashMessage = "";
         $this->cards = PlayingCard::inRandomOrder()->get();
 
     }
@@ -77,12 +77,12 @@ class Blackjack extends Component
 
     public function hitRound()
     {
-
+        
         $this->gameRunning = true;
 
         if($this->rounds == 0) {
 
-            $this->playerBalance -= 30;
+            $this->playerBalance -= $this->betAmount;
 
         }
 
@@ -119,13 +119,17 @@ class Blackjack extends Component
 
         if($this->dealerScore > 21) {
 
-            return 'Player wins!';
+            $this->payout();
+
+            return auth()->user()->name . ' wins!';
 
         }
 
         if($this->playerScore <= 21 && $this->playerScore > $this->dealerScore) {
 
-            return 'Player wins!';
+            $this->payout();
+
+            return auth()->user()->name . ' wins!';
 
         }
 
@@ -134,6 +138,8 @@ class Blackjack extends Component
             return 'Dealer wins!';
 
         }
+
+        $this->playerStands += $this->betAmount;
 
         return 'It\'s a draw!';
 
@@ -208,6 +214,13 @@ class Blackjack extends Component
         }
 
         return false;
+
+    }
+
+    public function payout()
+    {
+
+        $this->playerBalance += 45;
 
     }
 
