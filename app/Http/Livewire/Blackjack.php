@@ -4,7 +4,7 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\PlayingCard;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class Blackjack extends Component
 {
@@ -33,8 +33,8 @@ class Blackjack extends Component
         $this->gameRunning = false;
         $this->dealerScore = 0;
         $this->playerScore = 0;
-        $this->dealerCards = new Collection;
-        $this->playerCards = new Collection;
+        $this->dealerCards = collect();
+        $this->playerCards = collect();
         $this->playerStands = false;
         $this->dealerStands = false;
         $this->cards = PlayingCard::inRandomOrder()->get();
