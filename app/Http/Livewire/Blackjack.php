@@ -4,25 +4,29 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use App\Models\PlayingCard;
-use Illuminate\Support\Collection;
 
 class Blackjack extends Component
 {
 
+    private $payoutAmount = 45;
+    private $betAmount = 30;
     public $rounds;
     public $gameRunning;
     public $playerBalance = 300;
-    private $betAmount = 30;
     public $gameIsOver;
     public $dealerScore;
     public $playerScore;
     public $dealerCards;
     public $playerCards;
     public $playerStands;
-    public $dealerStands;
     public $flashMessage;
     public $cards;
     public $winner;
+
+    protected $listeners = [
+        'playerGetsCard' => 'playerHits',
+        'dealerGetsCard' => 'dealerHits'
+    ];
 
     public function mount()
     {
@@ -36,7 +40,6 @@ class Blackjack extends Component
         $this->dealerCards = collect();
         $this->playerCards = collect();
         $this->playerStands = false;
-        $this->dealerStands = false;
         $this->cards = PlayingCard::inRandomOrder()->get();
 
     }
@@ -121,7 +124,7 @@ class Blackjack extends Component
 
             $this->payout();
 
-            return auth()->user()->name . ' wins!';
+            return 'You win!';
 
         }
 
@@ -129,7 +132,7 @@ class Blackjack extends Component
 
             $this->payout();
 
-            return auth()->user()->name . ' wins!';
+            return 'You win!';
 
         }
 
@@ -220,7 +223,7 @@ class Blackjack extends Component
     public function payout()
     {
 
-        $this->playerBalance += 45;
+        $this->playerBalance += $this->payoutAmount;
 
     }
 

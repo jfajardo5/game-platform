@@ -15,14 +15,19 @@ use App\Http\Livewire\Blackjack;
 */
 
 Route::get('/', function () {
+
     return view('welcome');
+
 });
 
 Route::group(['prefix' => 'dashboard', 'middleware' => ['auth:sanctum', 'verified']], function() {
 
 	Route::get('/', function () {
+
 	    return view('dashboard');
+		
 	})->name('dashboard');
 
 	Route::get('/play', Blackjack::class)->name('play');
+
 });
