@@ -9,7 +9,7 @@
         </div>
         <div class="flex flex-row flex-wrap items-center justify-center p-3 mb-2 h-36 lg:h-64">
             <template x-for="card in dealerCards">
-                <div class="flex flex-col items-center justify-center p-2 text-center animate__animated animate__flipInX">
+                <div class="flex flex-col items-center justify-center p-2 text-center animate__animated animate__flipInY">
                     <span x-text="card.name + ' of ' + card.group" class="text-sm lg:text-lg"></span>
                     <img :src="card.image_url" class="w-16 lg:w-32">
                 </div>
@@ -24,7 +24,7 @@
         <hr>
         <div class="flex flex-row flex-wrap items-center justify-center p-3 h-36 lg:h-64">
             <template x-for="card in playerCards">
-                <div class="flex flex-col items-center justify-center p-2 text-center animate__animated animate__flipInX">
+                <div class="flex flex-col items-center justify-center p-2 text-center animate__animated animate__flipInY">
                     <span x-text="card.name + ' of ' + card.group" class="text-sm lg:text-lg"></span>
                     <img :src="card.image_url" class="w-16 lg:w-32">
                 </div>

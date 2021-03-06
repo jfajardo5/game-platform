@@ -23,11 +23,6 @@ class Blackjack extends Component
     public $cards;
     public $winner;
 
-    protected $listeners = [
-        'playerGetsCard' => 'playerHits',
-        'dealerGetsCard' => 'dealerHits'
-    ];
-
     public function mount()
     {
 
