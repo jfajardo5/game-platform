@@ -31,7 +31,9 @@
             @livewire('navigation-menu')
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                <div class="py-4 lg:py-12">
+                    {{ $slot }}
+                </div>
             </main>
         </div>
 

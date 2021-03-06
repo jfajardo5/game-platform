@@ -46,6 +46,13 @@ class Blackjack extends Component
 
     }
 
+    /**
+     *  Player stands, dealer plays until dealerScore >= 17.
+     * 
+     *  @param void
+     * 
+     *  @return boolean
+     */
     public function stand()
     {
         
@@ -73,6 +80,13 @@ class Blackjack extends Component
 
     }
 
+    /**
+     *  Player hits, dealer plays if possible.
+     * 
+     *  @param void
+     * 
+     *  @return boolean
+     */
     public function hitRound()
     {
         
@@ -106,6 +120,13 @@ class Blackjack extends Component
 
     }
 
+    /**
+     *  Determines who won the game.
+     * 
+     *  @param void
+     * 
+     *  @return string
+     */
     public function determineWinner()
     {
 
@@ -143,6 +164,13 @@ class Blackjack extends Component
 
     }
 
+    /**
+     *  Adds card to player's hand.
+     * 
+     *  @param void
+     * 
+     *  @return void
+     */
     public function playerHits()
     {
 
@@ -156,6 +184,13 @@ class Blackjack extends Component
 
     }
 
+    /**
+     *  Adds card to dealer's hand.
+     * 
+     *  @param void
+     * 
+     *  @return void
+     */
     public function dealerHits()
     {
 
@@ -169,6 +204,13 @@ class Blackjack extends Component
 
     }
 
+    /**
+     *  Player stands, dealer plays until dealerScore >= 17.
+     * 
+     *  @param void
+     * 
+     *  @return boolean
+     */
     public function dealerCanHit()
     {
 
@@ -182,6 +224,14 @@ class Blackjack extends Component
 
     }
 
+    /**
+     *  Return card value. Determines whether Ace is worth 11 or 1.
+     * 
+     *  @param string $value
+     *  @param int $score
+     *  
+     *  @return int
+     */
     public function parseCardValue($value, $score) 
     {
 
@@ -200,6 +250,13 @@ class Blackjack extends Component
         return filter_var($value, FILTER_SANITIZE_NUMBER_INT);
     }
 
+    /**
+     *  Determines if game is over.
+     * 
+     *  @param void
+     * 
+     *  @return bool
+     */
     public function isGameOver()
     {
 
@@ -215,6 +272,13 @@ class Blackjack extends Component
 
     }
 
+    /**
+     *  Adds payout to player's balance.
+     * 
+     *  @param void
+     * 
+     *  @return void
+     */
     public function payout()
     {
 
