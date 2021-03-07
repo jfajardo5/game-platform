@@ -28,6 +28,12 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth:sanctum', 'verifie
 		
 	})->name('dashboard');
 
+	Route::get('/leaderboard', function() {
+
+		return view('leaderboard');
+
+	})->name('leaderboard');
+
 	Route::get('/play', Blackjack::class)->name('play');
 
 });

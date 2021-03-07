@@ -12,7 +12,7 @@ class Blackjack extends Component
     private $bet_amount = 30;
     public $rounds;
     public $game_running;
-    public $player_balance = 300;
+    public $player_balance;
     public $game_is_over;
     public $dealer_score;
     public $player_score;
@@ -25,11 +25,14 @@ class Blackjack extends Component
 
     public function mount()
     {
-
+        if((auth()->user()->balance - $this->bet_amount < 0)) {
+            $this->reset_balance();
+        }
         $this->game_is_over = false;
         $this->rounds = 0;
         $this->flash_message = "";
         $this->game_running = false;
+        $this->player_balance = auth()->user()->balance;
         $this->dealer_score = 0;
         $this->player_score = 0;
         $this->dealer_cards = collect();
@@ -94,7 +97,7 @@ class Blackjack extends Component
 
         if($this->rounds == 0) {
 
-            $this->player_balance -= $this->bet_amount;
+            $this->deduct_balance();
 
         }
 
@@ -138,7 +141,7 @@ class Blackjack extends Component
 
         if($this->dealer_score > 21) {
 
-            $this->payout();
+            $this->payout($this->payout_amount);
 
             return 'You win!';
 
@@ -146,7 +149,7 @@ class Blackjack extends Component
 
         if($this->player_score <= 21 && $this->player_score > $this->dealer_score) {
 
-            $this->payout();
+            $this->payout($this->payout_amount);
 
             return 'You win!';
 
@@ -158,7 +161,7 @@ class Blackjack extends Component
 
         }
 
-        $this->player_stands += $this->bet_amount;
+        $this->payout($this->bet_amount);
 
         return 'It\'s a draw!';
 
@@ -279,10 +282,34 @@ class Blackjack extends Component
      * 
      *  @return void
      */
-    public function payout()
+    public function payout($amount = 30)
     {
 
-        $this->player_balance += $this->payout_amount;
+        auth()->user()->balance += $amount;
+
+        $this->player_balance = auth()->user()->balance;
+
+        auth()->user()->save();
+
+    }
+
+    public function deduct_balance()
+    {
+
+        auth()->user()->balance -= $this->bet_amount;
+
+        $this->player_balance = auth()->user()->balance;
+
+        auth()->user()->save();
+
+    }
+
+    public function reset_balance()
+    {
+
+        auth()->user()->balance = 300;
+
+        auth()->user()->save();
 
     }
 
