@@ -8,33 +8,33 @@ use App\Models\PlayingCard;
 class Blackjack extends Component
 {
 
-    private $payoutAmount = 45;
-    private $betAmount = 30;
+    private $payout_amount = 45;
+    private $bet_amount = 30;
     public $rounds;
-    public $gameRunning;
-    public $playerBalance = 300;
-    public $gameIsOver;
-    public $dealerScore;
-    public $playerScore;
-    public $dealerCards;
-    public $playerCards;
-    public $playerStands;
-    public $flashMessage;
+    public $game_running;
+    public $player_balance = 300;
+    public $game_is_over;
+    public $dealer_score;
+    public $player_score;
+    public $dealer_cards;
+    public $player_cards;
+    public $player_stands;
+    public $flash_message;
     public $cards;
     public $winner;
 
     public function mount()
     {
 
-        $this->gameIsOver = false;
+        $this->game_is_over = false;
         $this->rounds = 0;
-        $this->flashMessage = "";
-        $this->gameRunning = false;
-        $this->dealerScore = 0;
-        $this->playerScore = 0;
-        $this->dealerCards = collect();
-        $this->playerCards = collect();
-        $this->playerStands = false;
+        $this->flash_message = "";
+        $this->game_running = false;
+        $this->dealer_score = 0;
+        $this->player_score = 0;
+        $this->dealer_cards = collect();
+        $this->player_cards = collect();
+        $this->player_stands = false;
         $this->cards = PlayingCard::inRandomOrder()->get();
 
     }
@@ -47,7 +47,7 @@ class Blackjack extends Component
     }
 
     /**
-     *  Player stands, dealer plays until dealerScore >= 17.
+     *  Player stands, dealer plays until dealer_score >= 17.
      * 
      *  @param void
      * 
@@ -56,21 +56,21 @@ class Blackjack extends Component
     public function stand()
     {
         
-        $this->gameRunning = true;
+        $this->game_running = true;
 
-        $this->playerStands = true;
+        $this->player_stands = true;
 
-        if($this->isGameOver()) {
+        if($this->is_game_over()) {
 
-            $this->flashMessage = $this->determineWinner();
+            $this->flash_message = $this->determine_winner();
 
             return false;
 
         }
 
-        if($this->dealerCanHit()) {
+        if($this->dealer_can_hit()) {
 
-            $this->dealerHits();
+            $this->dealer_hits();
 
         }
 
@@ -87,36 +87,36 @@ class Blackjack extends Component
      * 
      *  @return boolean
      */
-    public function hitRound()
+    public function hit_round()
     {
         
-        $this->gameRunning = true;
+        $this->game_running = true;
 
         if($this->rounds == 0) {
 
-            $this->playerBalance -= $this->betAmount;
+            $this->player_balance -= $this->bet_amount;
 
         }
 
-        $this->playerHits();
+        $this->player_hits();
 
-        if($this->dealerCanHit()) {
+        if($this->dealer_can_hit()) {
 
-            $this->dealerHits();
+            $this->dealer_hits();
 
         }
 
         $this->rounds++;
 
-        if($this->isGameOver()) {
+        if($this->is_game_over()) {
 
-            $this->flashMessage = $this->determineWinner();
+            $this->flash_message = $this->determine_winner();
 
             return false;
 
         }
 
-        $this->gameRunning = false;
+        $this->game_running = false;
 
     }
 
@@ -127,16 +127,16 @@ class Blackjack extends Component
      * 
      *  @return string
      */
-    public function determineWinner()
+    public function determine_winner()
     {
 
-        if($this->playerScore > 21) {
+        if($this->player_score > 21) {
 
             return 'Dealer wins!';
 
         }
 
-        if($this->dealerScore > 21) {
+        if($this->dealer_score > 21) {
 
             $this->payout();
 
@@ -144,7 +144,7 @@ class Blackjack extends Component
 
         }
 
-        if($this->playerScore <= 21 && $this->playerScore > $this->dealerScore) {
+        if($this->player_score <= 21 && $this->player_score > $this->dealer_score) {
 
             $this->payout();
 
@@ -152,13 +152,13 @@ class Blackjack extends Component
 
         }
 
-        if($this->dealerScore <= 21 && $this->dealerScore > $this->playerScore) {
+        if($this->dealer_score <= 21 && $this->dealer_score > $this->player_score) {
 
             return 'Dealer wins!';
 
         }
 
-        $this->playerStands += $this->betAmount;
+        $this->player_stands += $this->bet_amount;
 
         return 'It\'s a draw!';
 
@@ -171,16 +171,16 @@ class Blackjack extends Component
      * 
      *  @return void
      */
-    public function playerHits()
+    public function player_hits()
     {
 
         $card = $this->cards->shift();
 
-        $card->value = $this->parseCardValue($card->value, $this->playerScore);
+        $card->value = $this->parse_card_value($card->value, $this->player_score);
         
-        $this->playerCards->push($card);
+        $this->player_cards->push($card);
 
-        $this->playerScore += $card->value;
+        $this->player_score += $card->value;
 
     }
 
@@ -191,30 +191,30 @@ class Blackjack extends Component
      * 
      *  @return void
      */
-    public function dealerHits()
+    public function dealer_hits()
     {
 
         $card = $this->cards->shift();
 
-        $card->value = $this->parseCardValue($card->value, $this->playerScore);
+        $card->value = $this->parse_card_value($card->value, $this->player_score);
 
-        $this->dealerCards->push($card);
+        $this->dealer_cards->push($card);
 
-        $this->dealerScore += $card->value;
+        $this->dealer_score += $card->value;
 
     }
 
     /**
-     *  Player stands, dealer plays until dealerScore >= 17.
+     *  Player stands, dealer plays until dealer_score >= 17.
      * 
      *  @param void
      * 
      *  @return boolean
      */
-    public function dealerCanHit()
+    public function dealer_can_hit()
     {
 
-        if($this->dealerScore < 17) {
+        if($this->dealer_score < 17) {
 
             return true;
 
@@ -232,7 +232,7 @@ class Blackjack extends Component
      *  
      *  @return int
      */
-    public function parseCardValue($value, $score) 
+    public function parse_card_value($value, $score) 
     {
 
         if($value == 'ace') {
@@ -257,12 +257,12 @@ class Blackjack extends Component
      * 
      *  @return bool
      */
-    public function isGameOver()
+    public function is_game_over()
     {
 
-        if($this->playerScore >= 21 || $this->dealerScore >= 21|| ($this->playerStands && !$this->dealerCanHit()) || ($this->playerStands && ($this->dealerScore > $this->playerScore)) || $this->gameIsOver ) {
+        if($this->player_score >= 21 || $this->dealer_score >= 21|| ($this->player_stands && !$this->dealer_can_hit()) || ($this->player_stands && ($this->dealer_score > $this->player_score)) || $this->game_is_over ) {
 
-            $this->gameIsOver = true;
+            $this->game_is_over = true;
             
             return true;
 
@@ -282,7 +282,7 @@ class Blackjack extends Component
     public function payout()
     {
 
-        $this->playerBalance += $this->payoutAmount;
+        $this->player_balance += $this->payout_amount;
 
     }
 
